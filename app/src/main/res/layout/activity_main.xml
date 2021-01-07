@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".presentation.MainActivity">
+
+
+    <TextView
+        android:id="@+id/base_player"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@color/exo_gray"
+        android:padding="12dp"
+        android:text="base player"
+        app:layout_constraintBottom_toTopOf="@id/subtitleWithCustomControl"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/subtitleWithCustomControl"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@color/exo_gray"
+        android:padding="12dp"
+        android:text="mp4 + vtt + custom"
+        app:layout_constraintBottom_toTopOf="@id/srtAndHlsWithCustom"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/base_player" />
+
+    <TextView
+        android:id="@+id/srtAndHlsWithCustom"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@color/exo_gray"
+        android:padding="12dp"
+        android:text="hls + srt + custom"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/subtitleWithCustomControl" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

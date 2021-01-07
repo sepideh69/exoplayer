@@ -1,0 +1,33 @@
+<resources>
+    <string name="app_name">ExoPlayer</string>
+
+    <string name="video_one"><![CDATA[https://www.radiantmediaplayer.com/media/big-buck-bunny-360p.mp4]]></string>
+    <string name="video_two"><![CDATA[https://www.learningcontainer.com/wp-content/uploads/2020/05/sample-mp4-file.mp4]]></string>
+    <string name="video_three"><![CDATA[https://tears-of-steel-subtitles.s3.amazonaws.com/tos.mp4]]></string>
+    <string name="subtitle_four"><![CDATA[https://tears-of-steel-subtitles.s3.amazonaws.com/tears-fr.vtt]]></string>
+
+    <string name="video_five"><![CDATA[https://www.iandevlin.com/html5test/webvtt/v/upc-tobymanley.mp4]]></string>
+    <string name="subtitle_five"><![CDATA[https://www.iandevlin.com/html5test/webvtt/upc-video-subtitles-en.vtt]]></string>
+
+
+    <string name="hls_url"><![CDATA[https://devstreaming-cdn.apple.com/videos/streaming/examples/img_bipbop_adv_example_fmp4/master.m3u8]]></string>
+
+    <string name="toy_story_url"><![CDATA[https://stream.digitoon.ir/vod/_definst_/smil:1569940778_1S81UovAnX.mp4.smil/playlist.m3u8?wprefixendtime=1609758660&wprefixstarttime=0&wprefixhash=CVdZcMgbwiKX3XvBLVcq0OcnWdNk4rzGZBsCpLbcaVI%3D&wprefixuserid=4158906&wprefixstore=8&userid=4158906&store=8&product=2502&producer=161&avfile=6482&promo=0&length=6003&price=10000]]></string>
+    <string name="subtitle_toy_story"><![CDATA[https://media.digitoon.ir/sub_titles/1609340951_uv68uTlc4L.srt]]></string>
+
+    <string name="ads_url"><![CDATA["https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/single_ad_samples&ciu_szs=300x250&impl=s&gdfp_req=1&env=vp&output=vast&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ct%3Dlinear&correlator="]]></string>
+    <string name="ad_tag_url"><![CDATA[https://admin.deema.agency/?c=v&m=tag&placementId=1733&videotype=prerole&ua=okhttp&domain=com.yaramobile.digitoon&secure=0&ip=46.209.8.138]]></string>
+
+
+    <string name="track_selection_title">Select tracks</string>
+    <string name="dialog_quality_title">انتخاب کیفیت نمایش</string>
+    <string name="for_always">برای همیشه</string>
+    <string name="ok">تایید</string>
+    <string name="cancel">انصراف</string>
+    <string name="exo_auto_quality">خودکار</string>
+
+    <string name="subtitle">لیست زیرنویس ها</string>
+    <string name="no_subtitle">بدون زیرنویس</string>
+
+
+</resources>
