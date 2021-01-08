@@ -19,9 +19,8 @@ class CustomControlView(
 
     private var TAG = "my_player"
     private var playerView: PlayerView? = null
-    private var backBtn : ImageButton?=null
-    private var unLockBtn : ImageButton?=null
-
+    private var backBtn: ImageButton? = null
+    private var unLockBtn: ImageButton? = null
 
 
     private var config: ControlViewConfig? = null
@@ -31,7 +30,6 @@ class CustomControlView(
     private var muteBtn: ImageButton? = null
     private var unMuteBtn: ImageButton? = null
     private var lockBtn: ImageButton? = null
-
 
 
     var isAllowToBack = true
@@ -125,7 +123,7 @@ class CustomControlView(
                 Log.d(TAG, "lockBtn?.apply ")
                 visibility = if (config.addLock) View.VISIBLE else View.GONE
                 setOnClickListener {
-                    updateLockStatus(true)
+                    onControlViewClick.onLockClick(true)
                 }
 
             }
@@ -133,7 +131,7 @@ class CustomControlView(
             unLockBtn?.apply {
 
                 setOnClickListener {
-                    updateLockStatus(false)
+                    onControlViewClick.onLockClick(false)
                 }
 
             }
@@ -163,19 +161,31 @@ class CustomControlView(
         unMuteBtn?.visibility = if (isMute) View.VISIBLE else View.GONE
     }
 
-    private fun updateLockStatus(isLock: Boolean) {
+//    private fun updateLockStatus(isLock: Boolean) {
+//
+//        Log.d(TAG, "updateLockStatus: $isLock ")
+//        isAllowToBack = !isLock
+//        backBtn?.visibility = if (isAllowToBack) View.VISIBLE else View.GONE
+//        lockBtn?.visibility = if (isLock) View.GONE else View.VISIBLE
+//        unLockBtn?.visibility = if (isLock) View.VISIBLE else View.GONE
+//
+//        playerView?.apply {
+//            useController = !isLock
+//            showController()
+//        }
+//
+//
+//    }
 
-        Log.d(TAG, "updateLockStatus: $isLock ")
-        isAllowToBack = !isLock
-        backBtn?.visibility = if (isAllowToBack) View.VISIBLE else View.GONE
-        lockBtn?.visibility = if (isLock) View.GONE else View.VISIBLE
-        unLockBtn?.visibility = if (isLock) View.VISIBLE else View.GONE
+    fun getBack(): ImageButton? {
+        return backBtn
+    }
 
-        playerView?.apply {
-            useController = !isLock
-            showController()
-        }
+    fun getLock(): ImageButton? {
+        return lockBtn
+    }
 
-
+    fun getUnLock(): ImageButton? {
+        return unLockBtn
     }
 }

@@ -253,5 +253,9 @@ class BasePlayer(
         return exoPlayer?.currentMediaItem
     }
 
+    fun getControlView() : CustomControlView{
+        return customControlView
+    }
+
 }
 

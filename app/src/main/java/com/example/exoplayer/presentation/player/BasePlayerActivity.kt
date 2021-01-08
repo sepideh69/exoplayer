@@ -39,7 +39,7 @@ open class BasePlayerActivity : AppCompatActivity(), PlayerCallBack, OnControlVi
 
     private var view: View? = null
     private var playerView: PlayerView? = null
-    private var backBtn: ImageButton? = null
+
 
     private var exoPlayer: SimpleExoPlayer? = null
     private var videoSource: VideoSource? = null
@@ -66,21 +66,23 @@ open class BasePlayerActivity : AppCompatActivity(), PlayerCallBack, OnControlVi
     var playbackPosition: Long = 0
     var allowedToBack = true
 
+    var basePlayer: BasePlayer? = null
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        Log.d("khar", "onCreate: base")
 
-        setContentView(R.layout.activity_base_player)
+//        setContentView(R.layout.activity_base_player)
         getDataFromIntent()
-        initData()
+
     }
 
-    private fun initData() {
+    fun initYaraPlayer() {
+        Log.d("khar", "initYaraPlayer: ")
         view = findViewById(R.id.player_view_parent)
         playerView = findViewById(R.id.demo_player_view)
-        backBtn = findViewById(R.id.btn_back)
-
 
         defaultTrackSelector.setParameters(
             defaultTrackSelector.buildUponParameters()
@@ -91,13 +93,23 @@ open class BasePlayerActivity : AppCompatActivity(), PlayerCallBack, OnControlVi
 
         playerView?.player = exoPlayer
 
+        basePlayer = BasePlayer(
+            view,
+            exoPlayer,
+            videoSource,
+            mediaItemConfig ?: MediaItemConfig(),
+            this,
+            controlViewConfig,
+            this
+        )
+
 
     }
 
 
     private fun getDataFromIntent() {
 
-        Log.d(TAG, "getDataFromIntent: ")
+        Log.d("khar", "getDataFromIntent: ")
         intent?.let { intent ->
 
             videoSource = intent.getParcelableExtra(IntentUtil.VIDEO_SOURCE_EXTRA)
@@ -141,15 +153,7 @@ open class BasePlayerActivity : AppCompatActivity(), PlayerCallBack, OnControlVi
         Log.d(TAG, "initializePlayer")
         Log.d(TAG, "controlViewConfig: $controlViewConfig")
 
-        BasePlayer(
-            view,
-            exoPlayer,
-            videoSource,
-            mediaItemConfig ?: MediaItemConfig(),
-            this,
-            controlViewConfig,
-            this
-        ).start()
+        basePlayer?.start()
 
     }
 
@@ -218,7 +222,7 @@ open class BasePlayerActivity : AppCompatActivity(), PlayerCallBack, OnControlVi
 
         if (!isOpen)
             alertDialog?.dismiss()
-        backBtn?.visibility = if (isOpen) View.GONE else View.VISIBLE
+        getBackBtn()?.visibility = if (isOpen) View.GONE else View.VISIBLE
         visibilityOfControlView(!isOpen)
         allowedToBack = !isOpen
         exoPlayer?.apply {
@@ -352,6 +356,30 @@ open class BasePlayerActivity : AppCompatActivity(), PlayerCallBack, OnControlVi
         onBackPressed()
     }
 
+    override fun onLockClick(isLock: Boolean) {
+        val isAllowToBack = !isLock
+        getBackBtn()?.visibility = if (isAllowToBack) View.VISIBLE else View.GONE
+        getLockBtn()?.visibility = if (isLock) View.GONE else View.VISIBLE
+        getUnLockBtn()?.visibility = if (isLock) View.VISIBLE else View.GONE
+
+        playerView?.apply {
+            useController = !isLock
+            showController()
+        }
+
+    }
+
+    private fun getLockBtn(): ImageButton? {
+        return basePlayer?.getControlView()?.getLock()
+    }
+
+    private fun getUnLockBtn(): ImageButton? {
+        return basePlayer?.getControlView()?.getUnLock()
+    }
+
+    private fun getBackBtn(): ImageButton? {
+        return basePlayer?.getControlView()?.getBack()
+    }
 
 }
 
