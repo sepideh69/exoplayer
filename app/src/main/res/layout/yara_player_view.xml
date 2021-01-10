@@ -5,11 +5,10 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layoutDirection="rtl"
-    android:id="@+id/player_view_parent"
     >
 
     <com.google.android.exoplayer2.ui.PlayerView
-        android:id="@+id/demo_player_view"
+        android:id="@+id/exo_player_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/black"
@@ -21,7 +20,7 @@
         app:use_controller="true" />
 
     <ImageButton
-        android:id="@+id/btn_unLock"
+        android:id="@+id/exo_unLock"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="12dp"
@@ -33,7 +32,7 @@
         app:srcCompat="@drawable/exo_lock_btn" />
 
     <ImageButton
-        android:id="@+id/btn_back"
+        android:id="@+id/exo_back"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="top|right"

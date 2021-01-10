@@ -8,11 +8,4 @@ import kotlinx.android.parcel.Parcelize
 data class MediaItemConfig(
     val initAds: Boolean = false,
     val addSubtitle: Boolean = false
-) : Parcelable {
-
-    fun isConfigValid(): Boolean {
-
-        return !(!initAds && !addSubtitle)
-
-    }
-}
+) : Parcelable

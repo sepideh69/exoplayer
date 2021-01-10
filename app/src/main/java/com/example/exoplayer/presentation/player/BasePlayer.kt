@@ -17,9 +17,8 @@ import com.google.android.exoplayer2.util.MimeTypes
 
 
 class BasePlayer(
-    private val view: View?,
-    private val exoPlayer: SimpleExoPlayer?,
-    private val videoSource: VideoSource?,
+    private val yaraPlayerView: YaraPlayerView,
+    private val videoSource: VideoSource,
     private val mediaItemConfig: MediaItemConfig,
     private val playerCallBack: PlayerCallBack,
     private val controlViewConfig: ControlViewConfig?,
@@ -28,15 +27,13 @@ class BasePlayer(
 ) {
 
     private var TAG = "my_player"
-    private var playerView: PlayerView? =null
     private var mediaItems = arrayListOf<MediaItem>()
     private var startIndex = 0
     private var startPosition: Long = 0
     private val subtitleList = ArrayList<MediaItem.Subtitle>()
     private var customControlView =
         CustomControlView(
-            view?.findViewById(R.id.demo_player_view),
-            exoPlayer,
+            yaraPlayerView,
             onControlViewClick
         )
 
@@ -44,17 +41,15 @@ class BasePlayer(
     private var videoTitle: TextView? = null
     private var exoRew: ImageButton? = null
 
-
     init {
 
-        Log.d("mediacheck", "init: $mediaItemConfig")
         setUpLayout()
     }
 
     private fun setUpLayout() {
         Log.d(TAG, "setUpLayout: base")
-        playerView = view?.findViewById(R.id.demo_player_view)
-        playerView?.apply {
+
+        yaraPlayerView.exoPlayerView?.apply {
             videoTitle = findViewById(R.id.exo_Video_title)
             exoRew = findViewById(R.id.exo_rew)
             exoRew?.setOnClickListener {
@@ -73,12 +68,10 @@ class BasePlayer(
 
         Log.d(TAG, "start: base")
 
-        videoSource?.let { videoSource ->
+        videoSource.let { videoSource ->
             startIndex = videoSource.selectedSourceIndex
         }
         makeMediaItem()
-        getPlaybackProperties()
-
 
     }
 
@@ -87,7 +80,7 @@ class BasePlayer(
 
         Log.d(TAG, "makeMediaItem: $mediaItemConfig")
 
-        videoSource?.video?.let { list ->
+        videoSource.video?.let { list ->
 
             for (video in list) {
 
@@ -151,9 +144,10 @@ class BasePlayer(
 
     private fun initPlayer() {
 
-        Log.d(TAG, "initPlayer: ")
-        exoPlayer?.apply {
+        Log.d("fgdfgd", "initPlayer: ")
+        yaraPlayerView.exoPlayerView?.player?.apply {
 
+            Log.d("fgdfgd", "initPlayer: .exoPlayer?")
             resetPlayer()
             setMediaItems(mediaItems, startIndex, startPosition)
             prepare()
@@ -170,36 +164,25 @@ class BasePlayer(
         val haveStartIndex = startIndex != 0
         val resetPlayer = haveStartPosition || haveStartIndex
         if (resetPlayer) {
-            exoPlayer?.seekTo(startIndex, startPosition)
+            yaraPlayerView.exoPlayerView?.player?.seekTo(startIndex, startPosition)
         }
-
-    }
-
-    private fun getPlaybackProperties() {
-
-        exoPlayer?.currentMediaItem?.playbackProperties?.tag?.let { tag ->
-
-            updateUi(tag)
-
-        }
-
 
     }
 
     inner class PlayerEventListener : Player.EventListener {
 
         override fun onPlayerError(error: ExoPlaybackException) {
-            Log.d(TAG, "onPlayerError:  ${error.message}")
+            playerCallBack.onPlayerError(error)
             super.onPlayerError(error)
         }
 
         override fun onPlaybackStateChanged(state: Int) {
             super.onPlaybackStateChanged(state)
             when (state) {
-                Player.STATE_IDLE -> Log.d(TAG, "STATE_IDLE ")
-                Player.STATE_BUFFERING -> Log.d(TAG, "STATE_BUFFERING ")
-                Player.STATE_READY -> Log.d(TAG, "STATE_READY ")
-                Player.STATE_ENDED -> playerCallBack.videoEnded()
+                Player.STATE_IDLE -> Log.d("fgdfgd", "STATE_IDLE ")
+                Player.STATE_BUFFERING -> playerCallBack.onBufferingState()
+                Player.STATE_READY -> playerCallBack.onReadyState()
+                Player.STATE_ENDED -> playerCallBack.onEndedState()
 
 
             }
@@ -208,12 +191,7 @@ class BasePlayer(
 
         override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
 
-
-            mediaItem?.playbackProperties?.tag?.let { tag ->
-
-                updateUi(tag)
-
-            }
+            playerCallBack.onMediaItemTransition(mediaItem, reason)
 
         }
 
@@ -221,19 +199,10 @@ class BasePlayer(
     }
 
 
-    private fun updateUi(tag: Any) {
-
-        videoTitle?.text = tag.toString()
-
-        customControlView.updateSubtitleImage(hasSubtitle())
-
-    }
-
-    private fun hasSubtitle(): Boolean {
+    fun hasSubtitle(): Boolean {
 
         val currentId = getCurrentMediaItem()?.mediaId
-
-        videoSource?.video?.let { videos ->
+        videoSource.video?.let { videos ->
             if (currentId == null)
                 return@let
             for (video in videos) {
@@ -250,11 +219,7 @@ class BasePlayer(
 
 
     fun getCurrentMediaItem(): MediaItem? {
-        return exoPlayer?.currentMediaItem
-    }
-
-    fun getControlView() : CustomControlView{
-        return customControlView
+        return  yaraPlayerView.exoPlayerView?.player?.currentMediaItem
     }
 
 }

@@ -6,19 +6,6 @@
     android:layout_height="match_parent"
     android:layoutDirection="rtl">
 
-    <TextView
-        android:id="@+id/btn_test"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentEnd="true"
-        android:layout_margin="@dimen/eight_dp"
-        android:text="testBtn"
-        android:padding="12dp"
-        android:background="@color/colorPrimary"
-        android:textColor="@color/white"/>
-
-
     <LinearLayout
         android:id="@+id/exo_controller_container"
         android:layout_width="match_parent"
@@ -39,7 +26,6 @@
             android:layout_height="wrap_content"
             android:layoutDirection="rtl"
             android:paddingTop="4dp"
-            android:text="test title"
             android:textColor="@color/colorPrimary"
             android:textDirection="rtl"
             android:textSize="12sp" />
@@ -55,7 +41,7 @@
                 android:id="@+id/exo_setting"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="12dp"
+                android:layout_marginEnd="12dp"
                 android:layout_weight="0"
                 android:background="@null"
                 android:visibility="gone"
@@ -112,7 +98,7 @@
                 android:id="@+id/exo_unMute"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="12dp"
+                android:layout_marginEnd="12dp"
                 android:layout_weight="0"
                 android:background="@null"
                 android:padding="4dp"

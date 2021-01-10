@@ -4,11 +4,13 @@ import com.google.android.exoplayer2.MediaItem
 
 interface OnControlViewClick {
 
+    fun onMuteClick()
+    fun onUnMuteClick()
     fun onRewClick()
     fun onSettingClick()
     fun onSubtitleClick(subtitles: ArrayList<MediaItem.Subtitle>)
-    fun onBackClick()
     fun onLockClick(isLock : Boolean)
+    fun onBackClick()
 
 
 
