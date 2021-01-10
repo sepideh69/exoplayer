@@ -29,7 +29,6 @@ class YaraPlayerView @JvmOverloads constructor(
 
     fun init() {
 
-        Log.d("fgdfgd", ": init")
         LayoutInflater.from(context)
             .inflate(R.layout.yara_player_view, this, true)
         setUpLayout()

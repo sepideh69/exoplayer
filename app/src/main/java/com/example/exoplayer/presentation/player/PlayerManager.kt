@@ -9,6 +9,7 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import com.example.exoplayer.R
 import com.example.exoplayer.data.SubtitleEntity
 import com.example.exoplayer.data.VideoSource
+import com.example.exoplayer.presentation.AppConstant.Companion.PLAYER_TAG
 import com.example.exoplayer.presentation.player.config.ControlViewConfig
 import com.example.exoplayer.presentation.player.config.MediaItemConfig
 import com.google.android.exoplayer2.*
@@ -16,20 +17,20 @@ import com.google.android.exoplayer2.ui.PlayerView
 import com.google.android.exoplayer2.util.MimeTypes
 
 
-class BasePlayer(
-    private val yaraPlayerView: YaraPlayerView,
-    private val videoSource: VideoSource,
-    private val mediaItemConfig: MediaItemConfig,
-    private val playerCallBack: PlayerCallBack,
-    private val controlViewConfig: ControlViewConfig?,
-    private val onControlViewClick: OnControlViewClick
+class PlayerManager(
+    private var yaraPlayerView: YaraPlayerView,
+    private var videoSource: VideoSource,
+    private var mediaItemConfig: MediaItemConfig,
+    private var playerCallBack: PlayerCallBack,
+    var controlViewConfig: ControlViewConfig?,
+    private var onControlViewClick: OnControlViewClick,
+    var selectedIndex: Int,
+    var selectedPosition: Long
 
 ) {
 
-    private var TAG = "my_player"
     private var mediaItems = arrayListOf<MediaItem>()
-    private var startIndex = 0
-    private var startPosition: Long = 0
+
     private val subtitleList = ArrayList<MediaItem.Subtitle>()
     private var customControlView =
         CustomControlView(
@@ -41,13 +42,14 @@ class BasePlayer(
     private var videoTitle: TextView? = null
     private var exoRew: ImageButton? = null
 
+
     init {
 
         setUpLayout()
     }
 
     private fun setUpLayout() {
-        Log.d(TAG, "setUpLayout: base")
+        Log.d(PLAYER_TAG, "setUpLayout: base")
 
         yaraPlayerView.exoPlayerView?.apply {
             videoTitle = findViewById(R.id.exo_Video_title)
@@ -59,18 +61,20 @@ class BasePlayer(
 
         }
 
-        if (controlViewConfig != null)
-            customControlView.start(controlViewConfig)
+        controlViewConfig?.let {
+            customControlView.start(it)
+        }
+
 
     }
 
     fun start() {
 
-        Log.d(TAG, "start: base")
+        Log.d(PLAYER_TAG, "start: base")
 
-        videoSource.let { videoSource ->
-            startIndex = videoSource.selectedSourceIndex
-        }
+//        videoSource.let { videoSource ->
+//           selectedIndex = videoSource.selectedSourceIndex
+//        }
         makeMediaItem()
 
     }
@@ -78,14 +82,14 @@ class BasePlayer(
 
     private fun makeMediaItem() {
 
-        Log.d(TAG, "makeMediaItem: $mediaItemConfig")
+        Log.d(PLAYER_TAG, "makeMediaItem: $mediaItemConfig")
 
         videoSource.video?.let { list ->
 
             for (video in list) {
 
-                if (list.indexOf(video) == startIndex)
-                    startPosition = video.watchedLength
+//                if (list.indexOf(video) == selectedIndex)
+//                    selectedPosition = video.watchedLength
 
                 mediaItems.add(
                     MediaItem.Builder()
@@ -130,7 +134,7 @@ class BasePlayer(
 
                 subtitleList.add(subtitle)
 
-                Log.d(TAG, "createSubtitleList: for  ${subtitleList.size}")
+                Log.d(PLAYER_TAG, "createSubtitleList: for  ${subtitleList.size}")
             }
 
             customControlView.subtitleList = subtitleList
@@ -144,12 +148,10 @@ class BasePlayer(
 
     private fun initPlayer() {
 
-        Log.d("fgdfgd", "initPlayer: ")
-        yaraPlayerView.exoPlayerView?.player?.apply {
 
-            Log.d("fgdfgd", "initPlayer: .exoPlayer?")
+        yaraPlayerView.exoPlayerView?.player?.apply {
             resetPlayer()
-            setMediaItems(mediaItems, startIndex, startPosition)
+            setMediaItems(mediaItems, selectedIndex, selectedPosition)
             prepare()
             play()
             addListener(PlayerEventListener())
@@ -160,11 +162,10 @@ class BasePlayer(
 
     private fun resetPlayer() {
 
-        val haveStartPosition: Boolean = startPosition.compareTo(0) != 0
-        val haveStartIndex = startIndex != 0
-        val resetPlayer = haveStartPosition || haveStartIndex
-        if (resetPlayer) {
-            yaraPlayerView.exoPlayerView?.player?.seekTo(startIndex, startPosition)
+        val haveStartPosition: Boolean = selectedPosition.compareTo(0) != 0
+        val haveStartIndex = selectedIndex != 0
+        if (haveStartPosition || haveStartIndex) {
+            yaraPlayerView.exoPlayerView?.player?.seekTo(selectedIndex, selectedPosition)
         }
 
     }
@@ -179,7 +180,7 @@ class BasePlayer(
         override fun onPlaybackStateChanged(state: Int) {
             super.onPlaybackStateChanged(state)
             when (state) {
-                Player.STATE_IDLE -> Log.d("fgdfgd", "STATE_IDLE ")
+                Player.STATE_IDLE ->playerCallBack.onIdleState()
                 Player.STATE_BUFFERING -> playerCallBack.onBufferingState()
                 Player.STATE_READY -> playerCallBack.onReadyState()
                 Player.STATE_ENDED -> playerCallBack.onEndedState()
@@ -196,6 +197,12 @@ class BasePlayer(
         }
 
 
+        override fun onTimelineChanged(timeline: Timeline, reason: Int) {
+            super.onTimelineChanged(timeline, reason)
+            playerCallBack.onTimelineChanged(timeline, reason)
+
+        }
+
     }
 
 
@@ -207,7 +214,7 @@ class BasePlayer(
                 return@let
             for (video in videos) {
                 if (video.id == currentId && !video.subtitles.isNullOrEmpty()) {
-                    Log.d(TAG, "checkSubtitle: true")
+                    Log.d(PLAYER_TAG, "checkSubtitle: true")
                     return true
                 }
 
@@ -219,7 +226,7 @@ class BasePlayer(
 
 
     fun getCurrentMediaItem(): MediaItem? {
-        return  yaraPlayerView.exoPlayerView?.player?.currentMediaItem
+        return yaraPlayerView.exoPlayerView?.player?.currentMediaItem
     }
 
 }

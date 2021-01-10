@@ -6,6 +6,7 @@ import android.view.View
 import android.widget.ImageButton
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.example.exoplayer.R
+import com.example.exoplayer.presentation.AppConstant.Companion.PLAYER_TAG
 import com.example.exoplayer.presentation.player.config.ControlViewConfig
 import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.SimpleExoPlayer
@@ -16,12 +17,8 @@ class CustomControlView(
     private val onControlViewClick: OnControlViewClick
 ) {
 
-    private var TAG = "my_player"
     private var config: ControlViewConfig? = null
-
-
     var subtitleList = ArrayList<MediaItem.Subtitle>()
-
 
     fun start(controlViewConfig: ControlViewConfig) {
 
@@ -32,7 +29,7 @@ class CustomControlView(
 
     private fun customiseController() {
 
-        Log.d(TAG, "handleCustomControlView: $config")
+        Log.d(PLAYER_TAG, "handleCustomControlView: $config")
 
         config ?: return
 
@@ -73,43 +70,29 @@ class CustomControlView(
             }
 
             lockBtn?.apply {
-                Log.d(TAG, "lockBtn?.apply ")
+
                 visibility = if (config!!.addLock) View.VISIBLE else View.GONE
                 setOnClickListener {
-                    onControlViewClick.onLockClick(true)
+                    onControlViewClick.onLockClick()
                 }
 
-
             }
 
+            unLockBtn?.apply {
 
-        }
+                setOnClickListener {
+                    onControlViewClick.onUnLockClick()
+                }
 
-        yaraPlayerView.unLockBtn?.apply {
-
-            setOnClickListener {
-                onControlViewClick.onLockClick(false)
             }
+            backBtn?.apply {
 
-        }
-        yaraPlayerView.backBtn?.apply {
+                visibility = if (config!!.addLock) View.VISIBLE else View.GONE
+                setOnClickListener {
+                    onControlViewClick.onBackClick()
+                }
 
-            visibility = if (config!!.addLock) View.VISIBLE else View.GONE
-            setOnClickListener {
-                onControlViewClick.onBackClick()
             }
-
-        }
-
-
-    }
-
-    fun updateSubtitleImage(hasSubtitle: Boolean) {
-        yaraPlayerView.subtitleBtn?.apply {
-            if (hasSubtitle)
-                setImageResource(R.drawable.exo_subtitle_btn)
-            else
-                setImageResource(R.drawable.exo_no_subtitle_btn)
 
         }
 

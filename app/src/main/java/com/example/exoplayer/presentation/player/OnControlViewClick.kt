@@ -9,7 +9,8 @@ interface OnControlViewClick {
     fun onRewClick()
     fun onSettingClick()
     fun onSubtitleClick(subtitles: ArrayList<MediaItem.Subtitle>)
-    fun onLockClick(isLock : Boolean)
+    fun onLockClick()
+    fun onUnLockClick()
     fun onBackClick()
 
 

@@ -1,48 +1,35 @@
 package com.example.exoplayer.presentation.player
 
 import android.annotation.SuppressLint
-import android.content.Context
 import android.content.DialogInterface
 import android.graphics.Typeface
-import android.os.Bundle
-import android.util.AttributeSet
 import android.util.Log
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.WindowManager
-import android.widget.ImageButton
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.res.ResourcesCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.example.exoplayer.R
 import com.example.exoplayer.data.VideoSource
-import com.example.exoplayer.presentation.AppConstant
+import com.example.exoplayer.presentation.AppConstant.Companion.PLAYER_TAG
 import com.example.exoplayer.presentation.player.config.ControlViewConfig
 import com.example.exoplayer.presentation.player.config.MediaItemConfig
 import com.example.exoplayer.presentation.util.CacheDataSourceFactory
-import com.example.exoplayer.presentation.util.IntentUtil
-import com.google.android.exoplayer2.C
-import com.google.android.exoplayer2.ExoPlaybackException
-import com.google.android.exoplayer2.MediaItem
-import com.google.android.exoplayer2.SimpleExoPlayer
+import com.google.android.exoplayer2.*
 import com.google.android.exoplayer2.ext.ima.ImaAdsLoader
 import com.google.android.exoplayer2.source.DefaultMediaSourceFactory
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
-import com.google.android.exoplayer2.ui.PlayerView
 import com.google.android.exoplayer2.util.Util
 
 abstract class BasePlayerActivity : AppCompatActivity(), PlayerCallBack, OnControlViewClick {
 
-    private var TAG = "my_player"
 
-    private var simpleExoPlayer: SimpleExoPlayer? = null
-    private var videoSource: VideoSource? = null
+    var simpleExoPlayer: SimpleExoPlayer? = null
     private var alertDialog: AlertDialog? = null
-
 
     private var typeface: Typeface? = null
     private val defaultTrackSelector by lazy {
@@ -52,8 +39,8 @@ abstract class BasePlayerActivity : AppCompatActivity(), PlayerCallBack, OnContr
         ImaAdsLoader.Builder(this).build()
     }
 
-    private var mediaItemConfig: MediaItemConfig? = null
-    private var controlViewConfig: ControlViewConfig? = null
+    private var startIndex = 0
+    private var startPosition: Long = 0
 
     var isShowingTrackSelectionDialog = false
     var playerWhenReady = true
@@ -61,19 +48,27 @@ abstract class BasePlayerActivity : AppCompatActivity(), PlayerCallBack, OnContr
     var playbackPosition: Long = 0
     var allowedToBack = true
 
-    var basePlayer: BasePlayer? = null
+    var playerManager: PlayerManager? = null
 
     abstract fun getYaraPlayerView(): YaraPlayerView
     abstract fun getVideoSource(): VideoSource
     abstract fun getMediaItemConfig(): MediaItemConfig?
     abstract fun getControlViewConfig(): ControlViewConfig?
 
-    fun getSelectedIndex(initPosition : Long) : Long{
-        return initPosition
+    open fun setSelectedIndex(selectedIndex: Int) {
+        startIndex = selectedIndex
     }
 
+    open fun setSelectedPosition(selectedPosition: Long) {
+        startPosition = selectedPosition
+    }
+
+    open fun setSubtitleTypeFace(customTypeface: Typeface) {
+        typeface = customTypeface
+    }
+
+
     override fun onStart() {
-        Log.d("fgdfgd", "onStart: base")
         getYaraPlayerView().init()
         initData()
         super.onStart()
@@ -92,7 +87,6 @@ abstract class BasePlayerActivity : AppCompatActivity(), PlayerCallBack, OnContr
 
     private fun initData() {
 
-        Log.d("fgdfgd", "initData: base")
         typeface = ResourcesCompat.getFont(this, R.font.iran_sans_font_family)
 
         defaultTrackSelector.setParameters(
@@ -103,16 +97,17 @@ abstract class BasePlayerActivity : AppCompatActivity(), PlayerCallBack, OnContr
         configExoPlayer()
 
         getYaraPlayerView().exoPlayerView?.player = simpleExoPlayer
-        basePlayer = BasePlayer(
+        playerManager = PlayerManager(
             getYaraPlayerView(),
             getVideoSource(),
             getMediaItemConfig() ?: MediaItemConfig(),
             this,
             getControlViewConfig(),
-            this
+            this,
+            startIndex,
+            startPosition
         )
     }
-
 
 
     private fun configExoPlayer() {
@@ -143,9 +138,7 @@ abstract class BasePlayerActivity : AppCompatActivity(), PlayerCallBack, OnContr
 
     private fun initBasePlayer() {
 
-        Log.d("fgdfgd", "controlViewConfig: $controlViewConfig")
-
-        basePlayer?.start()
+        playerManager?.start()
 
     }
 
@@ -246,7 +239,6 @@ abstract class BasePlayerActivity : AppCompatActivity(), PlayerCallBack, OnContr
 
     private fun openSettingDialog() {
 
-        Log.d(TAG, "openSettingDialog: ")
 
         if (!isShowingTrackSelectionDialog &&
             SettingDialogFragment.willHaveContent(defaultTrackSelector)
@@ -269,11 +261,6 @@ abstract class BasePlayerActivity : AppCompatActivity(), PlayerCallBack, OnContr
 
 
         }
-    }
-
-
-    open fun setSubtitleTypeFace(customTypeface: Typeface) {
-        typeface = customTypeface
     }
 
 
@@ -336,11 +323,26 @@ abstract class BasePlayerActivity : AppCompatActivity(), PlayerCallBack, OnContr
         openSubtitleDialog(subtitles)
     }
 
-    override fun onLockClick(isLock: Boolean) {
+    override fun onLockClick() {
+        setLock(true)
+    }
+
+    override fun onUnLockClick() {
+        setLock(false)
+    }
+
+
+    override fun onBackClick() {
+        onBackPressed()
+    }
+
+
+    fun setLock(isLock: Boolean) {
         val isAllowToBack = !isLock
         with(getYaraPlayerView()) {
+
             backBtn?.visibility = if (isAllowToBack) View.VISIBLE else View.GONE
-            visibility = if (isLock) View.GONE else View.VISIBLE
+            lockBtn?.visibility = if (isLock) View.GONE else View.VISIBLE
             unLockBtn?.visibility = if (isLock) View.VISIBLE else View.GONE
 
             exoPlayerView?.apply {
@@ -348,25 +350,36 @@ abstract class BasePlayerActivity : AppCompatActivity(), PlayerCallBack, OnContr
                 showController()
             }
         }
-
     }
-
-    override fun onBackClick() {
-        onBackPressed()
-    }
-
 
     //PlayerCallBack
     override fun onPlayerError(error: ExoPlaybackException) {
         TODO("Not yet implemented")
     }
 
+
+    override fun onIdleState() {
+        TODO("Not yet implemented")
+    }
+
+    override fun onBufferingState() {
+        Log.d(PLAYER_TAG, "onBufferingState: ")
+    }
+
     override fun onReadyState() {
-        updateUi(basePlayer?.getCurrentMediaItem())
+        updateUi(playerManager?.getCurrentMediaItem())
+    }
+
+    override fun onEndedState() {
+        Log.d(PLAYER_TAG, "onEndedState: ")
     }
 
     override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
         updateUi(mediaItem)
+    }
+
+    override fun onTimelineChanged(timeline: Timeline, reason: Int) {
+        Log.d(PLAYER_TAG, "onTimelineChanged: ")
     }
 
 
@@ -375,8 +388,8 @@ abstract class BasePlayerActivity : AppCompatActivity(), PlayerCallBack, OnContr
         getYaraPlayerView().videoTitle?.text =
             currentMediaItem.playbackProperties?.tag.toString()
 
-        basePlayer ?: return
-        getYaraPlayerView().setSubtitleImage(basePlayer!!.hasSubtitle())
+        playerManager ?: return
+        getYaraPlayerView().setSubtitleImage(playerManager!!.hasSubtitle())
 
     }
 

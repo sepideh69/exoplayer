@@ -19,26 +19,23 @@ import kotlinx.android.synthetic.main.exo_player_control_view.view.*
 
 class PlayerActivity : BasePlayerActivity() {
 
-    private val TAG = "MY_PLAYER"
     private lateinit var yaraPlayerView: YaraPlayerView
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        Log.d("fgdfgd", "onCreate: ")
 
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_player)
-
         initData()
+
     }
 
 
     private fun initData() {
-        Log.d("fgdfgd", "initData: ")
         yaraPlayerView = findViewById(R.id.yara_player_view)
     }
 
+
     override fun getYaraPlayerView(): YaraPlayerView {
-        Log.d("fgdfgd", "getYaraPlayerView: ")
         return yaraPlayerView
     }
 
@@ -53,6 +50,7 @@ class PlayerActivity : BasePlayerActivity() {
     override fun getControlViewConfig(): ControlViewConfig? {
         return intent.getParcelableExtra(IntentUtil.CONTROL_VIEW_CONFIG_EXTRA)
     }
+
 
    }
 
