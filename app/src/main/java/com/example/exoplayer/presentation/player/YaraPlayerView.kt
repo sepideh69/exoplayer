@@ -51,14 +51,5 @@ class YaraPlayerView @JvmOverloads constructor(
 
     }
 
-    fun setSubtitleImage(hasSubtitle: Boolean = false) {
-        subtitleBtn?.apply {
-            if (hasSubtitle)
-                setImageResource(R.drawable.exo_subtitle_btn)
-            else
-                setImageResource(R.drawable.exo_no_subtitle_btn)
 
-        }
-
-    }
 }

@@ -3,6 +3,7 @@ package com.example.exoplayer.presentation.player
 import android.annotation.SuppressLint
 import android.content.DialogInterface
 import android.graphics.Typeface
+import android.net.Uri
 import android.util.Log
 import android.view.Gravity
 import android.view.LayoutInflater
@@ -22,7 +23,10 @@ import com.example.exoplayer.presentation.util.CacheDataSourceFactory
 import com.google.android.exoplayer2.*
 import com.google.android.exoplayer2.ext.ima.ImaAdsLoader
 import com.google.android.exoplayer2.source.DefaultMediaSourceFactory
+import com.google.android.exoplayer2.source.MergingMediaSource
+import com.google.android.exoplayer2.source.SingleSampleMediaSource
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
+import com.google.android.exoplayer2.util.MimeTypes
 import com.google.android.exoplayer2.util.Util
 
 abstract class BasePlayerActivity : AppCompatActivity(), PlayerCallBack, OnControlViewClick {
@@ -389,7 +393,7 @@ abstract class BasePlayerActivity : AppCompatActivity(), PlayerCallBack, OnContr
             currentMediaItem.playbackProperties?.tag.toString()
 
         playerManager ?: return
-        getYaraPlayerView().setSubtitleImage(playerManager!!.hasSubtitle())
+        setSubtitleImage(playerManager!!.hasSubtitle())
 
     }
 
@@ -406,5 +410,18 @@ abstract class BasePlayerActivity : AppCompatActivity(), PlayerCallBack, OnContr
                 if (isMute) View.VISIBLE else android.view.View.GONE
         }
     }
+
+    private fun setSubtitleImage(hasSubtitle: Boolean = false) {
+        getYaraPlayerView().subtitleBtn?.apply {
+            if (hasSubtitle)
+                setImageResource(R.drawable.exo_subtitle_btn)
+            else
+                setImageResource(R.drawable.exo_no_subtitle_btn)
+
+        }
+
+    }
+
+
 }
 
